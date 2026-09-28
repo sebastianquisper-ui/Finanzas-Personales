@@ -11,9 +11,15 @@ permissions:
   pages: write
   id-token: write
 
+# Solo se publica desde un push (o ejecución manual) en main. Ojo: en un pull_request que ya
+# quedó fusionado, github.ref vale refs/heads/main, así que no basta con mirar la rama.
+env:
+  PUBLICAR: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  group: pages-${{ github.event_name }}-${{ github.ref }}
+  # Una publicación en curso nunca se cancela; las verificaciones de PR sí.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -27,7 +33,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v4
-        if: github.ref == 'refs/heads/main'
+        if: env.PUBLICAR == 'true'
         with:
           path: dist
 
@@ -48,7 +54,7 @@ jobs:
       - run: npm run test:firestore
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: [build, pruebas]
     runs-on: ubuntu-latest
     environment:

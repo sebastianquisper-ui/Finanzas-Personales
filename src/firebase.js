@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { connectAuthEmulator, getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import {
   connectFirestoreEmulator,
   initializeFirestore,
@@ -24,8 +24,12 @@ export const db = initializeFirestore(app, {
   }),
 });
 
-// Solo en desarrollo (npm run dev:emuladores): Auth y Firestore locales, sin tocar el proyecto real.
-if (import.meta.env.DEV && import.meta.env.VITE_EMULADORES) {
+// Solo con VITE_EMULADORES=1 (npm run dev:emuladores): Auth y Firestore locales. El build
+// publicado no define la variable, así que este bloque ni siquiera se incluye.
+if (import.meta.env.VITE_EMULADORES) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  // El emulador acepta credenciales de Google sin firmar: permite entrar en pruebas automáticas.
+  window.__entrarConEmulador = (email) =>
+    signInWithCredential(auth, GoogleAuthProvider.credential(JSON.stringify({ sub: email, email, email_verified: true })));
 }

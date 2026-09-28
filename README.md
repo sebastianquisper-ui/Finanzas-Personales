@@ -22,6 +22,14 @@ Cada push a `main` compila y publica en GitHub Pages (`.github/workflows/deploy.
 - GitHub → Settings → Pages → Source: **GitHub Actions**.
 - Firebase Console → Authentication → Configuración → Dominios autorizados: `sebastianquisper-ui.github.io`.
 
+## Instalar en el celular (PWA)
+
+En Android, abre el sitio en Chrome y toca **Instalar app** (o menú ⋮ → *Agregar a la pantalla principal*). Se instala con su icono y nombre, y abre a pantalla completa.
+
+- `vite-plugin-pwa` genera el manifest y un service worker que precarga el cascarón de la app (HTML, JS, CSS e iconos) y guarda las fuentes en caché.
+- Firestore usa persistencia local: sin conexión se ven los datos ya cargados y lo que registres se sincroniza al volver la señal.
+- Las versiones nuevas se instalan solas y se usan al volver a abrir la app.
+
 ## Datos en Firestore
 
 ```
@@ -40,14 +48,14 @@ Las reglas están en `firestore.rules`: cada usuario solo lee y escribe bajo `us
 
 ## Código
 
-- `src/modelo.js`, `src/fechas.js`, `src/resumen.js`, `src/formato.js`: lógica pura (validaciones, periodos, totales, formato en soles).
+- `src/modelo.js`, `src/fechas.js`, `src/resumen.js`, `src/presupuesto.js`, `src/metas.js`, `src/formato.js`: lógica pura (validaciones, periodos, totales, presupuestos, metas, formato en soles).
 - `src/datos.js`: acceso a Firestore.
-- `src/ui/`: pantallas (`inicio.js`, `movimientos.js`), formulario en hoja inferior (`formulario.js`), menú, gráficos (Chart.js) y componentes.
+- `src/ui/`: pantallas (`inicio.js`, `movimientos.js`, `presupuesto.js`, `metas.js`), comparación de periodos, formulario en hoja inferior (`formulario.js`), menú, gráficos (Chart.js) y componentes.
 
 ## Pruebas
 
 ```bash
-npm test                  # modelo, periodos, resúmenes y formato
+npm test                  # modelo, periodos, resúmenes, presupuestos, metas y formato
 npm run test:firestore    # reglas y capa de datos contra el emulador (requiere Java)
 ```
 

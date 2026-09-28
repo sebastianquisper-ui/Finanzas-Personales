@@ -6,3 +6,4 @@ dist
 # Respaldos de datos reales exportados de la app anterior: nunca se suben
 *backup*.json
 *respaldo*.json
+dist-emu
