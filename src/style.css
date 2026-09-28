@@ -77,16 +77,6 @@ button:focus-visible {
   color: var(--ink-soft);
 }
 
-.icono-sello {
-  display: grid;
-  place-items: center;
-  border-radius: 28%;
-  background: var(--ink);
-  color: var(--gold);
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-}
-
 /* Acceso */
 
 .acceso {
@@ -106,7 +96,6 @@ button:focus-visible {
   border-radius: 28%;
   object-fit: cover;
   margin-bottom: 8px;
-  font-size: 40px;
 }
 
 .acceso h1 {
@@ -184,7 +173,6 @@ button:focus-visible {
   height: 36px;
   border-radius: 28%;
   object-fit: cover;
-  font-size: 14px;
 }
 
 .boton-texto {

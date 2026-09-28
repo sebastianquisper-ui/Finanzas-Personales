@@ -1,14 +1,11 @@
-// Configuración del proyecto Firebase "finanzas-personales-edb47".
-// Este objeto NO es secreto (identifica el proyecto ante Firebase);
-// lo que protege los datos son las reglas de Firestore (ver firestore.rules).
-//
-// Reemplaza los valores de abajo con los de:
-// Firebase Console → Configuración del proyecto → Tus apps → app web.
+// Configuración de la app web del proyecto Firebase "finanzas-personales-edb47".
+// No es secreta (identifica el proyecto ante Firebase); lo que protege los datos
+// son las reglas de Firestore (firestore.rules) y los dominios autorizados de Auth.
 export const firebaseConfig = {
-  apiKey: 'REEMPLAZAR',
+  apiKey: 'AIzaSyDUcGVO1FjS28OiKeyqE3hTqKDa8I20AAI',
   authDomain: 'finanzas-personales-edb47.firebaseapp.com',
   projectId: 'finanzas-personales-edb47',
-  storageBucket: 'finanzas-personales-edb47.appspot.com',
-  messagingSenderId: 'REEMPLAZAR',
-  appId: 'REEMPLAZAR',
+  storageBucket: 'finanzas-personales-edb47.firebasestorage.app',
+  messagingSenderId: '1096244054721',
+  appId: '1:1096244054721:web:51e24297d546e16aaca240',
 };

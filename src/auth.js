@@ -6,7 +6,6 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth, googleProvider } from './firebase.js';
-import { firebaseConfig } from './firebase-config.js';
 
 // El popup es el camino principal: en GitHub Pages el redirect cruza dominios
 // (authDomain es *.firebaseapp.com) y algunos navegadores bloquean ese almacenamiento.
@@ -15,9 +14,6 @@ const USAR_REDIRECT = new Set(['auth/popup-blocked', 'auth/operation-not-support
 const SILENCIOSOS = new Set(['auth/popup-closed-by-user', 'auth/cancelled-popup-request']);
 
 export async function iniciarSesion() {
-  if (firebaseConfig.apiKey === 'REEMPLAZAR') {
-    throw Object.assign(new Error('firebaseConfig sin completar'), { code: 'app/config-pendiente' });
-  }
   try {
     await signInWithPopup(auth, googleProvider);
   } catch (err) {
@@ -56,10 +52,6 @@ export function mensajeDeError(err) {
       return 'Demasiados intentos. Espera un momento e inténtalo otra vez.';
     case 'auth/user-disabled':
       return 'Esta cuenta está deshabilitada.';
-    case 'app/config-pendiente':
-    case 'auth/invalid-api-key':
-    case 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
-      return 'Falta configurar Firebase (src/firebase-config.js).';
     default:
       return 'No se pudo iniciar sesión. Inténtalo otra vez.';
   }
