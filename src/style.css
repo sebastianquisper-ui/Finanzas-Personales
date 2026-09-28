@@ -1,0 +1,197 @@
+:root {
+  --paper: #f2efe6;
+  --card: #fbfaf5;
+  --ink: #17211b;
+  --ink-soft: #5a655d;
+  --line: #ddd7c6;
+  --gold: #c99a2e;
+  --green: #2f7a55;
+  --red: #b3452d;
+  --amber: #b8842b;
+  color-scheme: light;
+}
+
+/* Oscuro: sigue al sistema salvo que el usuario elija "Claro"; o forzado con data-theme="dark". */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #111713;
+    --card: #1a221d;
+    --ink: #ece8da;
+    --ink-soft: #a4ab9f;
+    --line: #2c3530;
+    --gold: #e0b348;
+    --green: #4fa57a;
+    --red: #e0806a;
+    --amber: #d9a64a;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #111713;
+  --card: #1a221d;
+  --ink: #ece8da;
+  --ink-soft: #a4ab9f;
+  --line: #2c3530;
+  --gold: #e0b348;
+  --green: #4fa57a;
+  --red: #e0806a;
+  --amber: #d9a64a;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+.cifra {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.texto-suave {
+  color: var(--ink-soft);
+}
+
+/* Acceso */
+
+.acceso {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.acceso-icono {
+  width: 112px;
+  height: 112px;
+  border-radius: 28%;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.acceso h1 {
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: -0.01em;
+}
+
+.acceso-lema {
+  margin: 0 0 24px;
+  color: var(--ink-soft);
+}
+
+.boton-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 500;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.boton-google:hover {
+  border-color: var(--gold);
+}
+
+.boton-google:active {
+  transform: scale(0.98);
+}
+
+.boton-google:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.acceso-error {
+  min-height: 1.45em;
+  max-width: 320px;
+  margin: 8px 0 0;
+  color: var(--red);
+  font-size: 14px;
+}
+
+.acceso-nota {
+  max-width: 280px;
+  margin: 16px 0 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+/* Cascarón con sesión */
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+}
+
+.cabecera h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 22px;
+}
+
+.cabecera-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 28%;
+  object-fit: cover;
+}
+
+.boton-texto {
+  border: 0;
+  background: none;
+  padding: 8px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.contenido {
+  padding: 8px 16px 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

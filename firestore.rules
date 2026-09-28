@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// Cada usuario solo lee y escribe bajo users/{su uid}. Todo lo demás queda denegado.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esDueno(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function esTexto(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+
+    function esMonto(v) {
+      return v is number && v > 0 && v <= 999999999;
+    }
+
+    function esFecha(v) {
+      return v is string && v.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
+    }
+
+    function opcional(d, campo) {
+      return !(campo in d);
+    }
+
+    function movimientoValido(d) {
+      return d.keys().hasAll(['tipo', 'categoria', 'monto', 'fecha', 'medio'])
+        && d.keys().hasOnly(['tipo', 'categoria', 'monto', 'fecha', 'nota', 'medio', 'transferId', 'creado'])
+        && d.tipo in ['gasto', 'ingreso']
+        && d.medio in ['digital', 'efectivo']
+        && esMonto(d.monto)
+        && esFecha(d.fecha)
+        && esTexto(d.categoria, 1, 60)
+        && (opcional(d, 'nota') || esTexto(d.nota, 0, 500))
+        && (opcional(d, 'transferId') || esTexto(d.transferId, 1, 64))
+        && (opcional(d, 'creado') || d.creado is int);
+    }
+
+    function porMedio(m) {
+      return m is map && m.keys().hasOnly(['digital', 'efectivo']);
+    }
+
+    function configValida(d) {
+      return d.keys().hasOnly(['categoriasGasto', 'categoriasIngreso', 'presupuestos', 'saldosCent'])
+        && (opcional(d, 'categoriasGasto') || (d.categoriasGasto is list && d.categoriasGasto.size() <= 200))
+        && (opcional(d, 'categoriasIngreso') || (d.categoriasIngreso is list && d.categoriasIngreso.size() <= 200))
+        && (opcional(d, 'presupuestos') || porMedio(d.presupuestos))
+        && (opcional(d, 'saldosCent') || (
+          porMedio(d.saldosCent)
+          && (opcional(d.saldosCent, 'digital') || d.saldosCent.digital is int)
+          && (opcional(d.saldosCent, 'efectivo') || d.saldosCent.efectivo is int)
+        ));
+    }
+
+    function metaValida(d) {
+      return d.keys().hasAll(['nombre', 'objetivo', 'aportes'])
+        && d.keys().hasOnly(['nombre', 'objetivo', 'limite', 'aportes', 'creado'])
+        && esTexto(d.nombre, 1, 80)
+        && esMonto(d.objetivo)
+        && (opcional(d, 'limite') || d.limite == '' || esFecha(d.limite))
+        && d.aportes is list && d.aportes.size() <= 2000
+        && (opcional(d, 'creado') || d.creado is int);
+    }
+
+    match /users/{uid} {
+      match /config/{docId} {
+        allow read, delete: if esDueno(uid);
+        allow create, update: if esDueno(uid) && docId == 'main' && configValida(request.resource.data);
+      }
+
+      match /movimientos/{id} {
+        allow read, delete: if esDueno(uid);
+        allow create, update: if esDueno(uid) && movimientoValido(request.resource.data);
+      }
+
+      match /metas/{id} {
+        allow read, delete: if esDueno(uid);
+        allow create, update: if esDueno(uid) && metaValida(request.resource.data);
+      }
+    }
+  }
+}
