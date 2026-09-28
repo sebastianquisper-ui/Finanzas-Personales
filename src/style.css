@@ -1,0 +1,58 @@
+:root {
+  --paper: #f2efe6;
+  --card: #fbfaf5;
+  --ink: #17211b;
+  --ink-soft: #5a655d;
+  --line: #ddd7c6;
+  --gold: #c99a2e;
+  --green: #2f7a55;
+  --red: #b3452d;
+  --amber: #b8842b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #111713;
+    --card: #1a221d;
+    --ink: #ece8da;
+    --gold: #e0b348;
+    --green: #4fa57a;
+    --red: #e0806a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+.cifra {
+  font-family: 'Fraunces', serif;
+}
+
+#app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  gap: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
