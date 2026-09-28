@@ -2,7 +2,9 @@ import { h, mount } from '../dom.js';
 import { rangoPeriodo, sumarDias } from '../fechas.js';
 import { NOMBRE_MEDIO } from '../formato.js';
 import { MAX_CATEGORIA, MAX_NOTA, MEDIOS, esFecha, esTransferencia, fechaLocal, normalizarConfig, parsearMonto } from '../modelo.js';
+import { avisoTrasGasto } from '../presupuesto.js';
 import { mostrarAviso, mostrarError } from './aviso.js';
+import { textoAvisoPresupuesto } from './presupuesto.js';
 import { segmentado } from './componentes.js';
 import { abrirHoja } from './hoja.js';
 import { icono } from './iconos.js';
@@ -209,7 +211,10 @@ export function abrirFormulario(ctx, { mov, tipo: tipoInicial = 'gasto' } = {}) 
 
   inputFecha.addEventListener('change', dibujar);
 
-  function aviso(texto, fecha) {
+  function aviso(texto, fecha, gasto = null) {
+    const mes = rangoPeriodo('mes', hoy);
+    const presupuesto = gasto && fecha >= mes.desde && fecha <= mes.hasta ? avisoTrasGasto(ctx.estado.movsMes, config, gasto, mov) : null;
+    if (presupuesto) return mostrarAviso(`${texto}. ${textoAvisoPresupuesto(presupuesto)}`, { duracion: 6000 });
     const { desde, hasta } = rangoPeriodo(ctx.estado.periodo.tipo, ctx.estado.periodo.ref);
     mostrarAviso(fecha < desde || fecha > hasta ? `${texto} (fuera del periodo que estás viendo)` : texto);
   }
@@ -242,7 +247,7 @@ export function abrirFormulario(ctx, { mov, tipo: tipoInicial = 'gasto' } = {}) 
       else ctx.datos.crearMovimiento(datos).listo.catch(mostrarError);
       if (s.otra && !lista.includes(categoria)) ctx.datos.guardarCategorias(s.tipo, [...lista, categoria]).catch(mostrarError);
       hoja.cerrar();
-      aviso(editando ? 'Cambios guardados' : s.tipo === 'gasto' ? 'Gasto registrado' : 'Ingreso registrado', fecha);
+      aviso(editando ? 'Cambios guardados' : s.tipo === 'gasto' ? 'Gasto registrado' : 'Ingreso registrado', fecha, datos);
     } catch (err) {
       if (err.code !== 'app/validacion') throw err;
       error.textContent = err.message;

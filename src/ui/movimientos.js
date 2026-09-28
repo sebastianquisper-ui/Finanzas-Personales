@@ -57,6 +57,7 @@ export function vistaMovimientos(ctx) {
     'aria-label': 'Buscar movimientos',
     value: filtros.texto,
     enterkeyhint: 'search',
+    'data-foco': 'busqueda',
   });
   busqueda.addEventListener('input', () => {
     filtros.texto = busqueda.value;

@@ -111,6 +111,16 @@ export function filaMovimiento(ctx, m, { conFecha = false } = {}) {
   );
 }
 
+// Barra de avance; el nivel (ok, alerta, excedido, meta) decide el color y siempre va con texto al lado.
+export function barraProgreso(fraccion, nivel, etiqueta) {
+  const pct = Math.round(Math.min(1, Math.max(0, fraccion)) * 100);
+  return h(
+    'div',
+    { class: `progreso nivel-${nivel ?? 'ninguno'}`, role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct, 'aria-label': etiqueta },
+    h('span', { style: `width:${pct}%` })
+  );
+}
+
 export function vacio(texto) {
   return h('p', { class: 'vacio' }, texto);
 }

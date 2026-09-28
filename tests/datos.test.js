@@ -165,6 +165,24 @@ describe('metas', () => {
     assert.equal((await getDoc(doc(db, 'users/ana/config/main'))).exists(), false);
   });
 
+  test('eliminar y restaurar una meta conserva sus aportes', async () => {
+    const { id, listo } = datos.crearMeta({ nombre: 'Viaje', objetivo: 1500 });
+    await listo;
+    const leer = async () => (await getDoc(doc(db, 'users/ana/metas', id))).data();
+    await datos.aportarAMeta({ id, ...(await leer()) }, 200, '2026-09-10');
+    const meta = { id, ...(await leer()) };
+    await datos.eliminarMeta(meta);
+    assert.equal((await getDoc(doc(db, 'users/ana/metas', id))).exists(), false);
+    await datos.restaurarMeta(meta);
+    assert.deepEqual({ id, ...(await leer()) }, meta);
+  });
+
+  test('lectura puntual por rango', async () => {
+    await datos.crearMovimiento({ ...gasto, fecha: '2026-08-15' }).listo;
+    await datos.crearMovimiento({ ...gasto, fecha: '2026-09-15' }).listo;
+    assert.deepEqual((await datos.movimientosEntre('2026-08-01', '2026-08-31')).map((m) => m.fecha), ['2026-08-15']);
+  });
+
   test('valida objetivo y fecha límite', () => {
     assert.throws(() => datos.crearMeta({ nombre: 'X', objetivo: 0 }));
     assert.throws(() => datos.crearMeta({ nombre: 'X', objetivo: 10, limite: '2027-02-30' }));

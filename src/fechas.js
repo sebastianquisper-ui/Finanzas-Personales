@@ -81,6 +81,11 @@ function diaMes(texto) {
   return `${f.getDate()} ${MESES_CORTOS[f.getMonth()]}`;
 }
 
+// "28 may 2027"
+export function fechaCorta(texto) {
+  return `${diaMes(texto)} ${aFecha(texto).getFullYear()}`;
+}
+
 // "Hoy", "Ayer", "sábado 26 sep" (con año si no es el actual).
 export function etiquetaDia(texto, hoy = fechaLocal()) {
   if (texto === hoy) return 'Hoy';

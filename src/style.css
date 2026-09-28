@@ -792,6 +792,374 @@ button.leyenda-fila:hover {
   text-transform: uppercase;
 }
 
+/* Barras de avance */
+
+.progreso {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+  overflow: hidden;
+}
+
+.progreso span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink-soft);
+}
+
+.progreso.nivel-ok span {
+  background: var(--green);
+}
+
+.progreso.nivel-alerta span {
+  background: var(--amber);
+}
+
+.progreso.nivel-excedido span {
+  background: var(--red);
+}
+
+.progreso.nivel-meta span {
+  background: var(--gold);
+}
+
+.nivel-texto-alerta {
+  color: var(--amber);
+}
+
+.nivel-texto-excedido,
+.texto-excedido {
+  color: var(--red);
+}
+
+/* Aviso de presupuesto en Inicio */
+
+.aviso-presupuesto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-left-width: 4px;
+  border-radius: 14px;
+  background: var(--card);
+  text-align: left;
+  font-size: 14px;
+}
+
+.aviso-presupuesto.alerta {
+  border-color: color-mix(in srgb, var(--amber) 60%, transparent);
+  border-left-color: var(--amber);
+}
+
+.aviso-presupuesto.excedido {
+  border-color: color-mix(in srgb, var(--red) 60%, transparent);
+  border-left-color: var(--red);
+}
+
+.aviso-presupuesto-titulo {
+  font-weight: 600;
+}
+
+.aviso-presupuesto.alerta .aviso-presupuesto-titulo {
+  color: var(--amber);
+}
+
+.aviso-presupuesto.excedido .aviso-presupuesto-titulo {
+  color: var(--red);
+}
+
+.aviso-presupuesto-ir {
+  margin-top: 2px;
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Presupuesto */
+
+.titulo-mes::first-letter {
+  text-transform: uppercase;
+}
+
+.presupuesto-total {
+  margin: 0 0 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.presupuesto-total .texto-suave {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.presupuesto-restante {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.presupuesto-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.presupuesto-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 0;
+}
+
+.presupuesto-fila + .presupuesto-fila {
+  border-top: 1px solid var(--line);
+}
+
+.presupuesto-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.presupuesto-categoria {
+  font-weight: 600;
+}
+
+.presupuesto-pct {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.presupuesto-detalle,
+.presupuesto-fila .presupuesto-restante {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.tope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.tope-etiqueta {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.tope-prefijo {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.tope .tope-campo {
+  flex: none;
+  width: 120px;
+  min-height: 40px;
+  text-align: right;
+}
+
+/* Metas */
+
+.nota-metas {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.meta .tarjeta-cabecera h2 {
+  overflow-wrap: anywhere;
+}
+
+.meta-avance {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+
+.meta-ahorrado {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.meta-pct {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.meta-estado {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.meta-estado.cumplida {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.meta-estado.vencida {
+  color: var(--red);
+}
+
+.meta-acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.meta-acciones .boton {
+  flex: 1;
+}
+
+.boton:disabled {
+  opacity: 0.45;
+}
+
+.boton-ancho {
+  width: 100%;
+}
+
+.meta-ahorro-actual {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Comparar periodos */
+
+.comparar summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.comparar summary::-webkit-details-marker {
+  display: none;
+}
+
+.comparar summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-right: 2px solid var(--ink-soft);
+  border-bottom: 2px solid var(--ink-soft);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.comparar[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+.comparar summary h2 {
+  margin: 0;
+}
+
+.comparar-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.comparar-periodo {
+  display: grid;
+  grid-template-columns: 24px 1fr 1.4fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparar-letra {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.comparar-etiqueta {
+  grid-column: 2 / -1;
+  margin-top: -4px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.comparar-etiqueta::first-letter {
+  text-transform: uppercase;
+}
+
+.comparar-periodo .texto-campo {
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.comparar-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparar-tabla caption {
+  padding-bottom: 4px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.comparar-tabla th,
+.comparar-tabla td {
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  text-align: right;
+}
+
+.comparar-tabla th:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.comparar-tabla thead th {
+  border-top: 0;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.comparar-diferencia {
+  margin: 0;
+  font-size: 14px;
+}
+
+.comparar-diferencia.mas .monto,
+.comparar-tabla td.mas {
+  color: var(--red);
+}
+
+.comparar-diferencia.menos .monto,
+.comparar-tabla td.menos {
+  color: var(--green);
+}
+
+select.texto-campo {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
 /* Barra inferior */
 
 .barra {

@@ -89,6 +89,13 @@ export function crearDatos(db, uid) {
       return onSnapshot(q, (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), alError);
     },
 
+    // Lectura puntual (sin escuchar cambios), p. ej. para comparar periodos.
+    async movimientosEntre(desde, hasta) {
+      const q = query(movimientosRef, where('fecha', '>=', desde), where('fecha', '<=', hasta), orderBy('fecha', 'desc'));
+      const snap = await getDocs(q);
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    },
+
     // Solo para acciones explícitas ("Todo el historial", búsqueda, recalcular saldos): lee todo.
     async todosLosMovimientos() {
       const snap = await getDocs(query(movimientosRef, orderBy('fecha', 'desc')));
@@ -219,6 +226,10 @@ export function crearDatos(db, uid) {
 
     eliminarMeta(meta) {
       return deleteDoc(doc(metasRef, meta.id));
+    },
+
+    restaurarMeta({ id, nombre, objetivo, limite = '', aportes = [], creado = Date.now() }) {
+      return setDoc(doc(metasRef, id), { nombre, objetivo, limite, aportes, creado });
     },
 
     // monto > 0 aporta, monto < 0 retira (no más de lo ahorrado).

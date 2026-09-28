@@ -2,6 +2,8 @@ import { h } from '../dom.js';
 import { gruposTendencia } from '../fechas.js';
 import { porcentaje } from '../formato.js';
 import { FILTROS_INICIALES, deMedio, gastosPorCategoria, ordenarRecientes, tendencia, totales } from '../resumen.js';
+import { alertas, estadoPresupuesto } from '../presupuesto.js';
+import { seccionComparar } from './comparar.js';
 import { billeteras, filaMovimiento, monto, selectorPeriodo, vacio } from './componentes.js';
 import { graficoDona, graficoTendencia, porcionesDona } from './graficos.js';
 
@@ -113,6 +115,28 @@ function seccionUltimos(ctx, movs) {
   );
 }
 
+function avisoPresupuesto(ctx) {
+  const { config, movsMes, medio } = ctx.estado;
+  if (!config) return null;
+  const lista = alertas(estadoPresupuesto(movsMes, config, medio));
+  if (!lista.length) return null;
+  const excedidas = lista.filter((f) => f.nivel === 'excedido');
+  const cerca = lista.filter((f) => f.nivel === 'alerta');
+  const texto = [
+    excedidas.length ? `Pasaste el tope en ${excedidas.map((f) => f.categoria).join(', ')}.` : null,
+    cerca.length ? `Cerca del tope: ${cerca.map((f) => `${f.categoria} (${Math.round((f.gastado / f.tope) * 100)} %)`).join(', ')}.` : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return h(
+    'button',
+    { type: 'button', class: `aviso-presupuesto ${excedidas.length ? 'excedido' : 'alerta'}`, onClick: () => ctx.irA('presupuesto') },
+    h('span', { class: 'aviso-presupuesto-titulo' }, excedidas.length ? 'Presupuesto excedido' : 'Presupuesto al 70 %'),
+    h('span', {}, texto),
+    h('span', { class: 'aviso-presupuesto-ir' }, 'Ver presupuesto')
+  );
+}
+
 export function vistaInicio(ctx) {
   const { movs, medio, config } = ctx.estado;
   const movsMedio = deMedio(movs, medio);
@@ -122,8 +146,10 @@ export function vistaInicio(ctx) {
     billeteras(ctx),
     selectorPeriodo(ctx),
     tarjetasResumen(totales(movsMedio)),
+    avisoPresupuesto(ctx),
     config ? seccionCategorias(ctx, movsMedio) : null,
     seccionTendencia(ctx, movsMedio),
-    seccionUltimos(ctx, movsMedio)
+    seccionUltimos(ctx, movsMedio),
+    seccionComparar(ctx)
   );
 }

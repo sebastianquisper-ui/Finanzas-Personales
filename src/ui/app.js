@@ -1,5 +1,5 @@
 import { h, mount } from '../dom.js';
-import { rangoPeriodo } from '../fechas.js';
+import { moverPeriodo, rangoPeriodo } from '../fechas.js';
 import { fechaLocal } from '../modelo.js';
 import { FILTROS_INICIALES } from '../resumen.js';
 import { alCambiarTemaSistema, montosOcultos, ocultarMontos } from '../tema.js';
@@ -10,8 +10,9 @@ import { iconoApp } from './icono.js';
 import { icono } from './iconos.js';
 import { vistaInicio } from './inicio.js';
 import { abrirMenu } from './menu.js';
+import { vistaMetas } from './metas.js';
 import { vistaMovimientos } from './movimientos.js';
-import { vistaPendiente } from './pendiente.js';
+import { vistaPresupuesto } from './presupuesto.js';
 
 const PESTANAS = [
   { id: 'inicio', nombre: 'Inicio', icono: 'inicio' },
@@ -23,21 +24,32 @@ const PESTANAS = [
 const VISTAS = {
   inicio: vistaInicio,
   movimientos: vistaMovimientos,
-  presupuesto: () => vistaPendiente('Presupuesto', 'Los presupuestos por categoría llegan en el siguiente paso.'),
-  metas: () => vistaPendiente('Metas de ahorro', 'Las metas de ahorro llegan en el siguiente paso.'),
+  presupuesto: vistaPresupuesto,
+  metas: vistaMetas,
 };
 
 const TODO = { desde: '0000-01-01', hasta: '9999-12-31' };
 
 export function iniciarApp(root, usuario, datos) {
+  const hoy = fechaLocal();
   const estado = {
     config: null,
     movs: [],
+    // Mes calendario actual (todos los medios): presupuesto y sus avisos.
+    movsMes: [],
+    metas: null,
     historial: null,
     medio: 'digital',
     periodo: { tipo: 'mes', ref: fechaLocal() },
     pestana: 'inicio',
     filtros: { ...FILTROS_INICIALES },
+    comparacion: {
+      abierta: false,
+      a: { tipo: 'mes', ref: hoy },
+      b: { tipo: 'mes', ref: moverPeriodo('mes', hoy, -1) },
+      movsA: null,
+      movsB: null,
+    },
   };
 
   let cancelarMovs = null;
@@ -156,16 +168,26 @@ export function iniciarApp(root, usuario, datos) {
       else boton.removeAttribute('aria-current');
     }
 
-    // Si se redibuja mientras se escribe en la búsqueda, se devuelve el foco al campo nuevo.
-    const buscando = document.activeElement?.classList.contains('busqueda-campo');
+    // Si llegan datos mientras se escribe en un campo marcado con data-foco, el campo nuevo
+    // recupera el foco y lo escrito.
+    const activo = document.activeElement;
+    const foco = contenido.contains(activo) ? activo.dataset.foco : null;
+    const escrito = foco ? activo.value : null;
     destruirGraficos();
     pendientesAlMontar = [];
     mount(contenido, VISTAS[estado.pestana](ctx));
     for (const fn of pendientesAlMontar) fn();
-    if (buscando) {
-      const campo = contenido.querySelector('.busqueda-campo');
-      campo?.focus();
-      campo?.setSelectionRange(campo.value.length, campo.value.length);
+    if (foco) {
+      const campo = contenido.querySelector(`[data-foco="${CSS.escape(foco)}"]`);
+      if (campo) {
+        campo.value = escrito;
+        campo.focus();
+        try {
+          campo.setSelectionRange(escrito.length, escrito.length);
+        } catch {
+          // Algunos tipos de campo (fecha) no tienen selección.
+        }
+      }
     }
   }
 
@@ -175,6 +197,15 @@ export function iniciarApp(root, usuario, datos) {
     estado.config = config;
     render();
   }, errorCarga);
+  const mes = rangoPeriodo('mes', hoy);
+  const cancelarMes = datos.escucharMovimientos(mes.desde, mes.hasta, (movs) => {
+    estado.movsMes = movs;
+    render();
+  }, errorCarga);
+  const cancelarMetas = datos.escucharMetas((metas) => {
+    estado.metas = metas;
+    if (estado.pestana === 'metas') render();
+  }, errorCarga);
   suscribirPeriodo();
   render();
 
@@ -183,6 +214,8 @@ export function iniciarApp(root, usuario, datos) {
     dejarDeEscucharTema();
     cancelarMovs?.();
     cancelarHistorial?.();
+    cancelarMes();
+    cancelarMetas();
     destruirGraficos();
     for (const d of document.querySelectorAll('dialog')) d.remove();
   };

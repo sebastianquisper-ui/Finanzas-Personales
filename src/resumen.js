@@ -91,3 +91,20 @@ export function filtrar(movs, { tipo = 'todos', categoria = null, texto = '' } =
   if (categoria) res = res.filter((m) => m.categoria === categoria);
   return buscar(res, texto);
 }
+
+// Comparación de dos periodos: totales, diferencia de gasto (A − B) y diferencia por categoría.
+export function compararPeriodos(movsA, movsB) {
+  const a = totales(movsA);
+  const b = totales(movsB);
+  const catA = new Map(gastosPorCategoria(movsA).map((g) => [g.categoria, g.total]));
+  const catB = new Map(gastosPorCategoria(movsB).map((g) => [g.categoria, g.total]));
+  const categorias = [...new Set([...catA.keys(), ...catB.keys()])];
+  const porCategoria = categorias
+    .map((categoria) => {
+      const ga = catA.get(categoria) ?? 0;
+      const gb = catB.get(categoria) ?? 0;
+      return { categoria, a: ga, b: gb, dif: (aCentimos(ga) - aCentimos(gb)) / 100 };
+    })
+    .sort((x, y) => Math.abs(y.dif) - Math.abs(x.dif) || x.categoria.localeCompare(y.categoria, 'es'));
+  return { a, b, difGasto: (aCentimos(a.gastos) - aCentimos(b.gastos)) / 100, porCategoria };
+}

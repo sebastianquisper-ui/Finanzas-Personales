@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test tests/modelo.test.js tests/vista.test.js",
+    "test": "node --test tests/modelo.test.js tests/vista.test.js tests/punto5.test.js",
     "test:firestore": "firebase emulators:exec --only firestore --project demo-finanzas \"node --test --test-concurrency=1 tests/reglas.test.js tests/datos.test.js\"",
     "dev:emuladores": "firebase emulators:exec --only auth,firestore --project finanzas-personales-edb47 \"VITE_EMULADORES=1 vite\""
   },
