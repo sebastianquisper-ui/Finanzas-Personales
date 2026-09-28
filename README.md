@@ -1,6 +1,8 @@
 # Mis Finanzas
 
-PWA de finanzas personales (soles, interfaz en español) con Firebase Authentication (Google) y Firestore. Ver `HANDOFF-Finanzas-Personales.md` para el plan completo de reconstrucción.
+PWA de finanzas personales (soles, interfaz en español) con Firebase Authentication (Google) y Firestore, publicada en GitHub Pages: https://sebastianquisper-ui.github.io/Finanzas-Personales/
+
+Ver `HANDOFF-Finanzas-Personales.md` para el plan completo de reconstrucción.
 
 ## Desarrollo
 
@@ -9,16 +11,36 @@ npm install
 npm run dev
 ```
 
-Antes de correrlo, completa los valores reales del proyecto Firebase en `src/firebase-config.js` (Firebase Console → Configuración del proyecto → Tus apps). Ese archivo no contiene secretos, pero sí identifica el proyecto.
+`src/firebase-config.js` tiene la configuración de la app web de Firebase. No es secreta (identifica el proyecto); los datos los protegen las reglas de Firestore.
 
-## Inicio de sesión
+## Publicación
 
-Solo con Google (`signInWithPopup`; si el navegador bloquea popups, cae a `signInWithRedirect`). Para que funcione desde el sitio publicado, agrega `sebastianquisper-ui.github.io` en Firebase Console → Authentication → Configuración → Dominios autorizados (`localhost` ya viene autorizado).
+Cada push a `main` compila y publica en GitHub Pages (`.github/workflows/deploy.yml`). Requisitos de una sola vez:
 
-## Build
+- GitHub → Settings → Pages → Source: **GitHub Actions**.
+- Firebase Console → Authentication → Configuración → Dominios autorizados: `sebastianquisper-ui.github.io`.
+
+## Datos en Firestore
+
+```
+users/{uid}/config/main       categoriasGasto, categoriasIngreso, presupuestos, saldosCent
+users/{uid}/movimientos/{id}  tipo, categoria, monto, fecha, nota, medio, transferId?, creado
+users/{uid}/metas/{id}        nombre, objetivo, limite, aportes[], creado
+```
+
+- `saldosCent` guarda el saldo de cada billetera en céntimos enteros y se actualiza con `increment()` en el mismo batch que cada movimiento, para no leer todo el historial al abrir la app. `recalcularSaldos()` lo reconstruye desde cero.
+- Las pantallas consultan solo el rango de fechas visible.
+- Las dos patas de una transferencia comparten `transferId` y se crean, editan y borran en un solo batch.
+
+### Reglas de seguridad
+
+Las reglas están en `firestore.rules`: cada usuario solo lee y escribe bajo `users/{su uid}`, y se validan tipos, montos, medios y fechas. **No se publican solas**: cópialas en Firebase Console → Firestore Database → Reglas → Publicar (o `npx firebase deploy --only firestore:rules` desde una computadora).
+
+## Pruebas
 
 ```bash
-npm run build
+npm test                  # modelo (fechas, montos, validaciones)
+npm run test:firestore    # reglas y capa de datos contra el emulador (requiere Java)
 ```
 
 ## Seguridad
