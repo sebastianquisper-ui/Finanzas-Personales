@@ -1,44 +1,29 @@
 import './style.css';
-import { Chart } from 'chart.js/auto';
-import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, googleProvider } from './firebase.js';
+import { mount } from './dom.js';
+import { observarSesion, resultadoRedirect } from './auth.js';
+import { pantallaAcceso, pantallaCarga } from './ui/login.js';
+import { pantallaApp } from './ui/app.js';
 
-// Placeholder de arranque: confirma que Vite, Firebase Auth y Chart.js
-// quedan conectados antes de portar las pantallas reales.
-const app = document.getElementById('app');
+const root = document.getElementById('app');
+let sesionResuelta = false;
+let usuario = null;
+let errorRedirect = null;
 
-function render(user) {
-  app.innerHTML = '';
-
-  const title = document.createElement('h1');
-  title.textContent = 'Mis Finanzas';
-  app.appendChild(title);
-
-  if (user) {
-    const p = document.createElement('p');
-    p.textContent = `Sesión iniciada como ${user.displayName ?? user.email}`;
-    app.appendChild(p);
-
-    const btn = document.createElement('button');
-    btn.textContent = 'Cerrar sesión';
-    btn.onclick = () => signOut(auth);
-    app.appendChild(btn);
-  } else {
-    const p = document.createElement('p');
-    p.textContent = 'Paso 1 del traspaso: Vite + Firebase + Chart.js conectados.';
-    app.appendChild(p);
-
-    const btn = document.createElement('button');
-    btn.textContent = 'Iniciar sesión con Google';
-    btn.onclick = () =>
-      signInWithPopup(auth, googleProvider).catch((err) =>
-        console.error('Error al iniciar sesión:', err)
-      );
-    app.appendChild(btn);
-  }
+function render() {
+  if (!sesionResuelta) return mount(root, pantallaCarga());
+  mount(root, usuario ? pantallaApp(usuario) : pantallaAcceso(errorRedirect));
 }
 
-onAuthStateChanged(auth, render);
+render();
 
-// Confirma que Chart.js quedó disponible (sin renderizar aún un gráfico real).
-console.info('Chart.js listo:', Chart.version);
+resultadoRedirect().catch((err) => {
+  errorRedirect = err;
+  if (sesionResuelta && !usuario) render();
+});
+
+observarSesion((user) => {
+  sesionResuelta = true;
+  usuario = user;
+  if (user) errorRedirect = null;
+  render();
+});

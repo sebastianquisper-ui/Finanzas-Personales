@@ -11,6 +11,10 @@ npm run dev
 
 Antes de correrlo, completa los valores reales del proyecto Firebase en `src/firebase-config.js` (Firebase Console → Configuración del proyecto → Tus apps). Ese archivo no contiene secretos, pero sí identifica el proyecto.
 
+## Inicio de sesión
+
+Solo con Google (`signInWithPopup`; si el navegador bloquea popups, cae a `signInWithRedirect`). Para que funcione desde el sitio publicado, agrega `sebastianquisper-ui.github.io` en Firebase Console → Authentication → Configuración → Dominios autorizados (`localhost` ya viene autorizado).
+
 ## Build
 
 ```bash
