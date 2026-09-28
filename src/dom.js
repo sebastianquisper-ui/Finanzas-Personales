@@ -11,7 +11,7 @@ export function h(tag, attrs = {}, ...children) {
       el.setAttribute(key, value === true ? '' : value);
     }
   }
-  for (const child of children.flat()) {
+  for (const child of children.flat(Infinity)) {
     if (child == null || child === false) continue;
     el.append(child instanceof Node ? child : String(child));
   }
@@ -19,5 +19,5 @@ export function h(tag, attrs = {}, ...children) {
 }
 
 export function mount(root, ...children) {
-  root.replaceChildren(...children);
+  root.replaceChildren(...children.flat(Infinity).filter((c) => c != null && c !== false));
 }

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { connectAuthEmulator, getAuth, GoogleAuthProvider } from 'firebase/auth';
 import {
+  connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
@@ -22,3 +23,9 @@ export const db = initializeFirestore(app, {
     tabManager: persistentMultipleTabManager(),
   }),
 });
+
+// Solo en desarrollo (npm run dev:emuladores): Auth y Firestore locales, sin tocar el proyecto real.
+if (import.meta.env.DEV && import.meta.env.VITE_EMULADORES) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+}

@@ -11,6 +11,8 @@ npm install
 npm run dev
 ```
 
+Para probar sin tocar el proyecto real (requiere Java): `npm run dev:emuladores` levanta Auth y Firestore locales y conecta la app a ellos.
+
 `src/firebase-config.js` tiene la configuración de la app web de Firebase. No es secreta (identifica el proyecto); los datos los protegen las reglas de Firestore.
 
 ## Publicación
@@ -36,10 +38,16 @@ users/{uid}/metas/{id}        nombre, objetivo, limite, aportes[], creado
 
 Las reglas están en `firestore.rules`: cada usuario solo lee y escribe bajo `users/{su uid}`, y se validan tipos, montos, medios y fechas. **No se publican solas**: cópialas en Firebase Console → Firestore Database → Reglas → Publicar (o `npx firebase deploy --only firestore:rules` desde una computadora).
 
+## Código
+
+- `src/modelo.js`, `src/fechas.js`, `src/resumen.js`, `src/formato.js`: lógica pura (validaciones, periodos, totales, formato en soles).
+- `src/datos.js`: acceso a Firestore.
+- `src/ui/`: pantallas (`inicio.js`, `movimientos.js`), formulario en hoja inferior (`formulario.js`), menú, gráficos (Chart.js) y componentes.
+
 ## Pruebas
 
 ```bash
-npm test                  # modelo (fechas, montos, validaciones)
+npm test                  # modelo, periodos, resúmenes y formato
 npm run test:firestore    # reglas y capa de datos contra el emulador (requiere Java)
 ```
 
